@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "jsx-lite-renderer",
+    "paths": {
+      "jsx-lite-renderer": ["./src/index.ts"],
+      "jsx-lite-renderer/jsx-runtime": ["./src/jsx-runtime.ts"],
+      "jsx-lite-renderer/jsx-dev-runtime": ["./src/jsx-dev-runtime.ts"]
+    },
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src", "test"]
+}

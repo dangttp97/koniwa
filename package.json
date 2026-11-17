@@ -1,0 +1,55 @@
+{
+  "name": "jsx-lite-renderer",
+  "version": "0.1.0",
+  "description": "A tiny JSX renderer that turns JSX straight into real DOM. No virtual DOM diffing, no state, no dependencies.",
+  "keywords": [
+    "jsx",
+    "dom",
+    "renderer",
+    "jsx-runtime",
+    "vite"
+  ],
+  "license": "MIT",
+  "author": "Trần Thành Phương Đăng",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dangttp97/jsx-lite-renderer.git"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "default": "./dist/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/jsx-dev-runtime.d.ts",
+      "default": "./dist/jsx-dev-runtime.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "packageManager": "yarn@4.18.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepack": "yarn build"
+  },
+  "devDependencies": {
+    "happy-dom": "^21.0.4",
+    "prettier": "^3.10.1",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}
