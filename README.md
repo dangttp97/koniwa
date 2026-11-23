@@ -6,15 +6,16 @@
 
 <p align="center">A tiny JSX renderer that turns JSX straight into real DOM nodes.</p>
 
-- **No virtual DOM diffing, no state, no hooks.** Components are plain functions that run once.
-- **No dependencies.** About 100 lines of TypeScript.
+- **React-style hooks.** `useState`, `useEffect`, `useMemo` and `useCallback`. When state
+  changes, only that component re-renders, and the DOM is patched in place, so inputs keep
+  their focus.
+- **No dependencies.** About 500 lines of TypeScript.
 - **Works with any JSX compiler** through the automatic runtime (`jsxImportSource`) or the
   classic `createVirtualNode` factory.
 
 It is a good fit for mostly static pages (portfolios, landing pages, CVs) where you want to
-write markup as components but don't need React. If you know React, you already know most of
-koniwa (see [Coming from React](#coming-from-react)). React-style hooks are planned (see
-[Roadmap](#roadmap)); until they land, use React or Preact if you need state or re-rendering.
+write markup as components, with a bit of interactivity, but don't need React. If you know
+React, you already know most of koniwa (see [Coming from React](#coming-from-react)).
 
 ## The name
 
@@ -78,56 +79,79 @@ With the automatic runtime the compiler imports what it needs, so components nev
 ## Usage
 
 ```tsx
-import { render } from "koniwa";
+import { mount, useEffect, useState } from "koniwa";
 
 const Greeting = ({ name }: { name: string }) => <h1>Hello, {name}!</h1>;
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    document.title = `Clicked ${count} times`;
+  }, [count]);
+
+  return (
+    <button onClick={() => setCount((c) => c + 1)}>
+      Clicked {count} times
+    </button>
+  );
+};
 
 const App = () => (
   <>
     <Greeting name="Ken Musashi" />
-    <button onClick={() => alert("Hi")}>Say hi</button>
+    <Counter />
   </>
 );
 
-render(<App />, document.getElementById("root")!);
+mount(<App />, document.getElementById("root")!);
 ```
 
 ## Coming from React
 
 The parts you write every day work the same way:
 
-| React                                        | koniwa                                       |
-| -------------------------------------------- | -------------------------------------------- |
-| Function components with `props`, `children` | Same                                         |
-| `<>...</>` / `Fragment`                      | Same                                         |
-| `className`, `htmlFor`, `style={{ ... }}`    | Same                                         |
-| `onClick`, `onInput`, `onSubmit`, …          | Same names, attached with `addEventListener` |
-| `"jsxImportSource": "react"`                 | `"jsxImportSource": "koniwa"`                |
-| `React.createElement(type, props, ...kids)`  | `createVirtualNode(type, props, ...kids)`    |
-| `createRoot(root).render(<App />)`           | `mount(<App />, root)`                       |
+| React                                             | koniwa                                       |
+| ------------------------------------------------- | -------------------------------------------- |
+| Function components with `props`, `children`      | Same                                         |
+| `<>...</>` / `Fragment`                           | Same                                         |
+| `className`, `htmlFor`, `style={{ ... }}`         | Same                                         |
+| `onClick`, `onInput`, `onSubmit`, …               | Same names, attached with `addEventListener` |
+| `"jsxImportSource": "react"`                      | `"jsxImportSource": "koniwa"`                |
+| `React.createElement(type, props, ...kids)`       | `createVirtualNode(type, props, ...kids)`    |
+| `createRoot(root).render(<App />)`                | `mount(<App />, root)`                       |
+| `useState`, `useEffect`, `useMemo`, `useCallback` | Same names and signatures                    |
+| `key` on list items                               | Same: keyed items are moved, not recreated   |
+| Controlled inputs (`value`, `checked`)            | Same                                         |
 
 What is different:
 
-- **Components run once.** Nothing re-renders; to update the page, call `mount` again or change
-  the DOM in an event handler.
 - **Events are native DOM events**, not React's synthetic events. `onChange` fires on the
   browser's `change` event (when an input loses focus); use `onInput` for every keystroke.
+- **Effects run right after the DOM is updated**, before the browser paints (like React's
+  `useLayoutEffect`), not later.
+- **`mount` replaces, it does not patch.** Calling `mount` again throws away the old tree (and
+  its state) and builds a new one. Use state to update parts of a page.
 - **Numbers in `style` get no unit.** Write `{ width: "10px" }`, not `{ width: 10 }`.
-- **Every prop is an attribute.** `value` and `checked` set the initial HTML attribute, and
-  `dangerouslySetInnerHTML` is not supported.
-- **No class components**, no `key`-based reordering (`key` is ignored), no hooks yet.
+- **No class components** and no `dangerouslySetInnerHTML`. `useRef`, `useContext` and
+  `useImperativeHandle` are not there yet (see [Roadmap](#roadmap)).
 
 ## API
 
 | Export                                        | Description                                                                                                                                                    |
 | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `render(child, container)`                    | Builds DOM from `child` and **appends** it to `container`. Accepts a VirtualNode, a string or number, an array, or a component function (`render(App, root)`). |
-| `mount(child, container)`                     | Clears `container`, then renders into it.                                                                                                                      |
+| `mount(child, container)`                     | Removes what was rendered in `container` before (running effect cleanups), clears it, then renders into it.                                                    |
+| `useState(initial)`                           | `[value, setValue]`. `setValue(next)` or `setValue((prev) => next)`; updates in the same tick are batched into one render.                                     |
+| `useEffect(effect, deps?)`                    | Runs `effect` after the DOM is updated, again when `deps` change (every render without `deps`). Return a function to clean up.                                 |
+| `useMemo(factory, deps)`                      | Returns the cached result of `factory` until `deps` change.                                                                                                    |
+| `useCallback(callback, deps)`                 | Returns the same function until `deps` change.                                                                                                                 |
 | `createVirtualNode(type, props, ...children)` | Classic JSX factory. Returns a VirtualNode `{ type, props, children }`.                                                                                        |
 | `Fragment`                                    | `<>...</>`: renders children without a wrapper element.                                                                                                        |
 | `koniwa/jsx-runtime`                          | Automatic runtime (`jsx`, `jsxs`, `Fragment`) used by the compiler.                                                                                            |
 
-Types: `Child`, `Component`, `Props`, `VirtualNode`, `JSX`.
+Types: `Child`, `Component`, `Props`, `VirtualNode`, `JSX`, `Dispatch`, `SetStateAction`,
+`DependencyList`, `EffectCallback`.
 
 ### How props are applied
 
@@ -137,9 +161,10 @@ Types: `Child`, `Component`, `Props`, `VirtualNode`, `JSX`.
 | `htmlFor`                           | `for` attribute                     |
 | `onClick`, `onInput`, … (functions) | `addEventListener("click", …)`      |
 | `style={{ color: "red" }}`          | assigned to `element.style`         |
+| `value`, `checked`, `selected`      | set as DOM properties               |
 | `true`                              | empty attribute (`hidden=""`)       |
-| `false`, `null`, `undefined`        | attribute is not set                |
-| `key`                               | ignored                             |
+| `false`, `null`, `undefined`        | attribute is not set (or removed)   |
+| `key`                               | used to match list items            |
 | anything else                       | `setAttribute(name, String(value))` |
 
 `<svg>` and its children are created in the SVG namespace; children of `<foreignObject>` go back
@@ -147,10 +172,11 @@ to HTML.
 
 ## Limitations
 
-- **Render once.** There is no diffing: calling `render` again appends a second copy. Use
-  `mount` to replace the content, or update the DOM directly (for example through `data-*`
-  attributes that your CSS reacts to).
-- **No state, effects, context or refs** yet (see [Roadmap](#roadmap)).
+- **Simple diffing.** Children are matched by position, or by `key` when given. Without keys,
+  inserting at the top of a list re-renders every item below it.
+- **`render` appends.** Calling `render` again on the same container adds a second tree. Use
+  `mount` to replace the content.
+- **No context or refs** yet (see [Roadmap](#roadmap)).
 - **Loose attribute types.** Intrinsic elements accept any attribute; there is no per-element
   type checking like `@types/react` provides.
 - **Custom CSS properties in `style` objects** (`{ "--size": "10px" }`) are not applied; set
@@ -158,20 +184,20 @@ to HTML.
 
 ## Roadmap
 
-The next step is React-style hooks, with the same names and call signatures as React, so
-code and habits carry over:
+React-style hooks, with the same names and call signatures as React, so code and habits
+carry over:
 
-| Hook                  | What it is for                                              |
-| --------------------- | ----------------------------------------------------------- |
-| `useState`            | Local state; changing it re-renders the component           |
-| `useEffect`           | Run code after render, with cleanup                         |
-| `useRef`              | Hold a DOM element or a value across renders                |
-| `useMemo`             | Cache a computed value until its dependencies change        |
-| `useCallback`         | Keep the same function between renders                      |
-| `useContext`          | Read a value from a `createContext` provider up the tree    |
-| `useImperativeHandle` | Expose methods from a component to its parent through `ref` |
+| Hook                  | What it is for                                              | Status    |
+| --------------------- | ----------------------------------------------------------- | --------- |
+| `useState`            | Local state; changing it re-renders the component           | Available |
+| `useEffect`           | Run code after render, with cleanup                         | Available |
+| `useMemo`             | Cache a computed value until its dependencies change        | Available |
+| `useCallback`         | Keep the same function between renders                      | Available |
+| `useRef`              | Hold a DOM element or a value across renders                | Planned   |
+| `useContext`          | Read a value from a `createContext` provider up the tree    | Planned   |
+| `useImperativeHandle` | Expose methods from a component to its parent through `ref` | Planned   |
 
-These are **planned, not available yet**; details may change while they are built.
+Planned hooks may change while they are built.
 
 Out of scope, on purpose: server-side rendering, client-side routing (SPA), server
 components, Suspense and concurrent rendering. koniwa stays a small tool for static sites of
@@ -185,6 +211,10 @@ yarn test        # Vitest + happy-dom
 yarn typecheck
 yarn build       # emits dist/
 ```
+
+On Windows, run the tests from a path with an uppercase drive letter (`C:\...`). VS Code
+terminals can start in `c:\...`, which makes Vitest load itself twice and fail with
+`Cannot read properties of undefined (reading 'config')`.
 
 ## License
 

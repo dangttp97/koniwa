@@ -1,7 +1,7 @@
 {
   "name": "koniwa",
-  "version": "0.1.0",
-  "description": "A tiny JSX renderer that turns JSX straight into real DOM. No virtual DOM diffing, no state, no dependencies.",
+  "version": "0.2.0",
+  "description": "A tiny JSX renderer for small static sites: real DOM, React-style hooks, no dependencies.",
   "keywords": [
     "jsx",
     "dom",

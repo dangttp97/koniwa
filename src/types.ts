@@ -10,3 +10,11 @@ export interface VirtualNode {
   props: Props;
   children: Child[];
 }
+
+export type SetStateAction<S> = S | ((previous: S) => S);
+
+export type Dispatch<A> = (action: A) => void;
+
+export type DependencyList = readonly unknown[];
+
+export type EffectCallback = () => void | (() => void);

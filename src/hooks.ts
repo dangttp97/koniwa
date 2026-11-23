@@ -1,0 +1,80 @@
+import { useHookSlot } from "./core/current-component.js";
+import { scheduleRender } from "./core/scheduler.js";
+import type {
+  DependencyList,
+  Dispatch,
+  EffectCallback,
+  SetStateAction,
+} from "./types.js";
+
+export const useState = <S>(
+  initialState: S | (() => S),
+): [S, Dispatch<SetStateAction<S>>] => {
+  const { hook, instance } = useHookSlot<{
+    value: S;
+    setValue?: Dispatch<SetStateAction<S>>;
+  }>(() => ({
+    value:
+      typeof initialState === "function"
+        ? (initialState as () => S)()
+        : initialState,
+  }));
+
+  const setValue = (hook.setValue ??= (action) => {
+    const next =
+      typeof action === "function"
+        ? (action as (previous: S) => S)(hook.value)
+        : action;
+    if (Object.is(next, hook.value)) return;
+    hook.value = next;
+    scheduleRender(instance);
+  });
+
+  return [hook.value, setValue];
+};
+
+export const useEffect = (
+  effect: EffectCallback,
+  deps?: DependencyList,
+): void => {
+  const { hook, instance } = useHookSlot<{
+    deps?: DependencyList;
+    cleanup?: () => void;
+  }>(() => ({}));
+
+  if (!depsChanged(hook.deps, deps)) return;
+  hook.deps = deps;
+
+  instance.pendingEffects.push(() => {
+    if (instance.unmounted) return;
+    hook.cleanup?.();
+    const cleanup = effect();
+    hook.cleanup = typeof cleanup === "function" ? cleanup : undefined;
+  });
+};
+
+export const useMemo = <T>(factory: () => T, deps: DependencyList): T => {
+  const { hook } = useHookSlot<{ value?: T; deps?: DependencyList }>(
+    () => ({}),
+  );
+
+  if (depsChanged(hook.deps, deps)) {
+    hook.value = factory();
+    hook.deps = deps;
+  }
+  return hook.value as T;
+};
+
+export const useCallback = <T extends (...args: any[]) => unknown>(
+  callback: T,
+  deps: DependencyList,
+): T => useMemo(() => callback, deps);
+
+const depsChanged = (
+  previous: DependencyList | undefined,
+  next: DependencyList | undefined,
+): boolean =>
+  !previous ||
+  !next ||
+  previous.length !== next.length ||
+  previous.some((dep, i) => !Object.is(dep, next[i]));
