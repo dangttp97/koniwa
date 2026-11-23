@@ -219,6 +219,9 @@ about ten pages-ish.
 
 ## Development
 
+[docs/architecture.md](docs/architecture.md) walks through how the renderer and hooks work,
+file by file.
+
 ```bash
 yarn install
 yarn test        # Vitest + happy-dom

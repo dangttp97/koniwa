@@ -1,6 +1,7 @@
-export { createContext, useContext } from "./context.js";
 export {
+  createContext,
   useCallback,
+  useContext,
   useEffect,
   useId,
   useImperativeHandle,
@@ -10,7 +11,7 @@ export {
   useRef,
   useState,
   useSyncExternalStore,
-} from "./hooks.js";
+} from "./hooks/index.js";
 export type { JSX } from "./jsx.js";
 export { mount, render } from "./render.js";
 export type {

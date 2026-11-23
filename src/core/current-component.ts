@@ -1,12 +1,12 @@
 import type { Child, Component, VirtualNode } from "../types.js";
 import type { Instance } from "./instance.js";
 
-let current: { instance: Instance; hookIndex: number } | null = null;
+let current: { component: Instance; nextHookIndex: number } | null = null;
 
-export const callComponent = (instance: Instance): Child => {
-  const { type, props, children } = instance.item as VirtualNode;
+export const callComponent = (component: Instance): Child => {
+  const { type, props, children } = component.item as VirtualNode;
   const previous = current;
-  current = { instance, hookIndex: 0 };
+  current = { component, nextHookIndex: 0 };
   try {
     return (type as Component)({ ...props, children });
   } finally {
@@ -14,16 +14,17 @@ export const callComponent = (instance: Instance): Child => {
   }
 };
 
-export const currentInstance = (): Instance => requireCurrent().instance;
+export const currentComponent = (): Instance => requireCurrent().component;
 
-export const useHookSlot = <T>(
-  create: () => T,
-): { hook: T; instance: Instance } => {
-  const slot = requireCurrent();
-  const { instance } = slot;
-  const index = slot.hookIndex++;
-  instance.hooks[index] ??= create();
-  return { hook: instance.hooks[index] as T, instance };
+export const useHook = <T>(create: (component: Instance) => T): T => {
+  const frame = requireCurrent();
+  const { component } = frame;
+  const index = frame.nextHookIndex++;
+
+  if (index >= component.hooks.length) {
+    component.hooks.push(create(component));
+  }
+  return component.hooks[index] as T;
 };
 
 const requireCurrent = () => {

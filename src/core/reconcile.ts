@@ -1,6 +1,7 @@
 import type { Child, Props, Ref } from "../types.js";
 import { callComponent } from "./current-component.js";
 import { createDomElement, updateProps } from "./dom.js";
+import { queueEffectsOf, runQueuedEffects } from "./effects.js";
 import {
   canReuse,
   childrenInsideSvg,
@@ -15,9 +16,6 @@ import {
 import { domNodesOf, nextDomSibling, placeDomNodes } from "./placement.js";
 import { setRef } from "./refs.js";
 
-let queuedLayoutEffects: Array<() => void> = [];
-let queuedEffects: Array<() => void> = [];
-
 export const createRoot = (container: Node): Instance =>
   createInstance(null, null, container, false);
 
@@ -27,28 +25,17 @@ export const renderRoot = (root: Instance, child: Child): void => {
   runQueuedEffects();
 };
 
-export const rerenderComponent = (instance: Instance): void => {
+export const rerenderComponent = (component: Instance): void => {
   const before =
-    nextDomSibling(instance) ?? domNodesOf(instance).at(-1)?.nextSibling;
-  renderComponent(instance);
-  placeDomNodes(instance.parentDom, [instance], before ?? null);
-};
-
-export const runQueuedEffects = (): void => {
-  const layoutEffects = queuedLayoutEffects;
-  const effects = queuedEffects;
-  queuedLayoutEffects = [];
-  queuedEffects = [];
-  layoutEffects.forEach((run) => run());
-  effects.forEach((run) => run());
+    nextDomSibling(component) ?? domNodesOf(component).at(-1)?.nextSibling;
+  renderComponent(component);
+  placeDomNodes(component.parentDom, [component], before ?? null);
 };
 
 export const unmount = (instance: Instance): void => {
   instance.unmounted = true;
   instance.children.forEach(unmount);
-  for (const hook of instance.hooks as Array<{ cleanup?: () => void }>) {
-    hook.cleanup?.();
-  }
+  runHookCleanups(instance);
   if (isElementItem(instance.item)) {
     setRef(instance.item.props.ref as Ref<Element>, null);
   }
@@ -58,29 +45,37 @@ const reconcileChildren = (
   parent: Instance,
   items: RenderItem[],
 ): Instance[] => {
-  const oldChildren = parent.children;
+  const findReusable = createMatcher(parent.children);
+
+  const children = items.map((item, index) => {
+    const old = findReusable(item, index);
+    if (!old) return mountChild(item, parent);
+    updateChild(old, item);
+    return old;
+  });
+
+  const kept = new Set(children);
+  for (const old of parent.children) {
+    if (!kept.has(old)) removeChild(old);
+  }
+  return children;
+};
+
+const createMatcher = (oldChildren: Instance[]) => {
   const oldByKey = new Map<unknown, Instance>();
   for (const old of oldChildren) {
     const key = keyOf(old.item);
     if (key != null) oldByKey.set(key, old);
   }
+  const taken = new Set<Instance>();
 
-  const reused = new Set<Instance>();
-  const children = items.map((item, index) => {
+  return (item: RenderItem, index: number): Instance | undefined => {
     const key = keyOf(item);
     const old = key != null ? oldByKey.get(key) : oldChildren[index];
-    if (old && !reused.has(old) && canReuse(old.item, item)) {
-      reused.add(old);
-      updateChild(old, item);
-      return old;
-    }
-    return mountChild(item, parent);
-  });
-
-  for (const old of oldChildren) {
-    if (!reused.has(old)) removeChild(old);
-  }
-  return children;
+    if (!old || taken.has(old) || !canReuse(old.item, item)) return undefined;
+    taken.add(old);
+    return old;
+  };
 };
 
 const mountChild = (item: RenderItem, parent: Instance): Instance => {
@@ -135,13 +130,15 @@ const renderElement = (instance: Instance, oldProps: Props): void => {
   }
 };
 
-const renderComponent = (instance: Instance): void => {
-  instance.needsRender = false;
-  const output = callComponent(instance);
-  instance.children = reconcileChildren(instance, toRenderItems(output));
+const renderComponent = (component: Instance): void => {
+  component.needsRender = false;
+  const output = callComponent(component);
+  component.children = reconcileChildren(component, toRenderItems(output));
+  queueEffectsOf(component);
+};
 
-  queuedLayoutEffects.push(...instance.pendingLayoutEffects);
-  queuedEffects.push(...instance.pendingEffects);
-  instance.pendingLayoutEffects = [];
-  instance.pendingEffects = [];
+const runHookCleanups = (instance: Instance): void => {
+  for (const hook of instance.hooks as Array<{ cleanup?: () => void }>) {
+    hook?.cleanup?.();
+  }
 };
