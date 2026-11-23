@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { Fragment, createVirtualNode, mount, render, type Child } from "koniwa";
+import {
+  Fragment,
+  createVirtualNode,
+  mount,
+  render,
+  type Child,
+} from "@koniwa/core";
 
 const renderToRoot = (child: Parameters<typeof render>[0]) => {
   const root = document.createElement("div");

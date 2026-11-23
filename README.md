@@ -35,15 +35,11 @@ _Jubako keeps things, watari carries them, koniwa shows them._
 
 ## Install
 
-Not on npm yet, so install it from GitHub:
-
 ```bash
-yarn add koniwa@github:dangttp97/koniwa
+npm install @koniwa/core
 # or
-npm install github:dangttp97/koniwa
+yarn add @koniwa/core
 ```
-
-The package builds itself on install (`prepack`).
 
 ## Setup
 
@@ -54,7 +50,7 @@ The package builds itself on install (`prepack`).
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "koniwa",
+    "jsxImportSource": "@koniwa/core",
   },
 }
 ```
@@ -67,7 +63,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   oxc: {
-    jsx: { runtime: "automatic", importSource: "koniwa" },
+    jsx: { runtime: "automatic", importSource: "@koniwa/core" },
   },
 });
 ```
@@ -78,7 +74,7 @@ With the automatic runtime the compiler imports what it needs, so components nev
 ## Usage
 
 ```tsx
-import { render } from "koniwa";
+import { render } from "@koniwa/core";
 
 const Greeting = ({ name }: { name: string }) => <h1>Hello, {name}!</h1>;
 
@@ -102,7 +98,7 @@ The parts you write every day work the same way:
 | `<>...</>` / `Fragment`                      | Same                                         |
 | `className`, `htmlFor`, `style={{ ... }}`    | Same                                         |
 | `onClick`, `onInput`, `onSubmit`, …          | Same names, attached with `addEventListener` |
-| `"jsxImportSource": "react"`                 | `"jsxImportSource": "koniwa"`                |
+| `"jsxImportSource": "react"`                 | `"jsxImportSource": "@koniwa/core"`          |
 | `React.createElement(type, props, ...kids)`  | `createVirtualNode(type, props, ...kids)`    |
 | `createRoot(root).render(<App />)`           | `mount(<App />, root)`                       |
 
@@ -125,7 +121,7 @@ What is different:
 | `mount(child, container)`                     | Clears `container`, then renders into it.                                                                                                                      |
 | `createVirtualNode(type, props, ...children)` | Classic JSX factory. Returns a VirtualNode `{ type, props, children }`.                                                                                        |
 | `Fragment`                                    | `<>...</>`: renders children without a wrapper element.                                                                                                        |
-| `koniwa/jsx-runtime`                          | Automatic runtime (`jsx`, `jsxs`, `Fragment`) used by the compiler.                                                                                            |
+| `@koniwa/core/jsx-runtime`                    | Automatic runtime (`jsx`, `jsxs`, `Fragment`) used by the compiler.                                                                                            |
 
 Types: `Child`, `Component`, `Props`, `VirtualNode`, `JSX`.
 

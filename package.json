@@ -1,5 +1,5 @@
 {
-  "name": "koniwa",
+  "name": "@koniwa/core",
   "version": "0.1.0",
   "description": "A tiny JSX renderer that turns JSX straight into real DOM. No virtual DOM diffing, no state, no dependencies.",
   "keywords": [

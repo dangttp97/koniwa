@@ -6,18 +6,18 @@ const src = (file: string) =>
 
 export default defineConfig({
   // Tests compile JSX with the package's own automatic runtime, straight from src/.
-  oxc: { jsx: { runtime: "automatic", importSource: "koniwa" } },
+  oxc: { jsx: { runtime: "automatic", importSource: "@koniwa/core" } },
   resolve: {
     alias: [
       {
-        find: "koniwa/jsx-runtime",
+        find: "@koniwa/core/jsx-runtime",
         replacement: src("jsx-runtime.ts"),
       },
       {
-        find: "koniwa/jsx-dev-runtime",
+        find: "@koniwa/core/jsx-dev-runtime",
         replacement: src("jsx-dev-runtime.ts"),
       },
-      { find: /^koniwa$/, replacement: src("index.ts") },
+      { find: /^@koniwa\/core$/, replacement: src("index.ts") },
     ],
   },
   test: { environment: "happy-dom" },
