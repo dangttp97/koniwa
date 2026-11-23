@@ -12,11 +12,14 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@koniwa/core",
     "paths": {
-      "@koniwa/core": ["./src/index.ts"],
-      "@koniwa/core/jsx-runtime": ["./src/jsx-runtime.ts"],
-      "@koniwa/core/jsx-dev-runtime": ["./src/jsx-dev-runtime.ts"]
+      "@koniwa/core": ["./packages/core/src/index.ts"],
+      "@koniwa/core/jsx-runtime": ["./packages/core/src/jsx-runtime.ts"],
+      "@koniwa/core/jsx-dev-runtime": [
+        "./packages/core/src/jsx-dev-runtime.ts"
+      ],
+      "@koniwa/router": ["./packages/router/src/index.ts"]
     },
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "test"]
+  "include": ["packages/*/src", "packages/*/test", "vitest.config.ts"]
 }
