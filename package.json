@@ -1,49 +1,19 @@
 {
-  "name": "@koniwa/core",
-  "version": "0.3.0",
-  "description": "A tiny JSX renderer for small static sites: real DOM, React-style hooks, no dependencies.",
-  "keywords": [
-    "jsx",
-    "dom",
-    "renderer",
-    "jsx-runtime",
-    "vite"
-  ],
+  "name": "koniwa-monorepo",
+  "private": true,
   "license": "MIT",
-  "author": "Trần Thành Phương Đăng",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dangttp97/koniwa.git"
-  },
   "type": "module",
-  "sideEffects": false,
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./jsx-runtime": {
-      "types": "./dist/jsx-runtime.d.ts",
-      "default": "./dist/jsx-runtime.js"
-    },
-    "./jsx-dev-runtime": {
-      "types": "./dist/jsx-dev-runtime.d.ts",
-      "default": "./dist/jsx-dev-runtime.js"
-    }
-  },
-  "types": "./dist/index.d.ts",
   "packageManager": "yarn@4.18.0",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "yarn workspaces foreach -At run build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "prepack": "yarn build"
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "happy-dom": "^21.0.4",

@@ -1,0 +1,43 @@
+{
+  "name": "@koniwa/core",
+  "version": "0.3.0",
+  "description": "A tiny JSX renderer for small static sites: real DOM, React-style hooks, no dependencies.",
+  "keywords": [
+    "jsx",
+    "dom",
+    "renderer",
+    "jsx-runtime",
+    "hooks"
+  ],
+  "license": "MIT",
+  "author": "Trần Thành Phương Đăng",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dangttp97/koniwa.git",
+    "directory": "packages/core"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "default": "./dist/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/jsx-dev-runtime.d.ts",
+      "default": "./dist/jsx-dev-runtime.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "yarn build"
+  }
+}

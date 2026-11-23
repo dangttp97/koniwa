@@ -1,0 +1,40 @@
+{
+  "name": "@koniwa/router",
+  "version": "0.1.0",
+  "description": "A small router for koniwa sites: path or hash URLs, route params, links and navigation hooks.",
+  "keywords": [
+    "router",
+    "jsx",
+    "hooks",
+    "koniwa"
+  ],
+  "license": "MIT",
+  "author": "Trần Thành Phương Đăng",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dangttp97/koniwa.git",
+    "directory": "packages/router"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "yarn workspace @koniwa/core run build && yarn build"
+  },
+  "peerDependencies": {
+    "@koniwa/core": "^0.3.0"
+  },
+  "devDependencies": {
+    "@koniwa/core": "^0.3.0"
+  }
+}

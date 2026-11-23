@@ -1,11 +1,12 @@
-# How koniwa works
+# How @koniwa/core works
 
-A short tour of the source, in the order things happen.
+A short tour of `packages/core/src`, in the order things happen. Paths below are relative
+to that folder unless they start with `packages/`.
 
 ## 1. JSX becomes plain objects
 
-The compiler turns `<p class="x">hi</p>` into a call to `jsx()` (`src/jsx-runtime.ts`),
-which calls `createVirtualNode()` (`src/virtual-node.ts`). The result is a **virtual node**:
+The compiler turns `<p class="x">hi</p>` into a call to `jsx()` (`packages/core/src/jsx-runtime.ts`),
+which calls `createVirtualNode()` (`packages/core/src/virtual-node.ts`). The result is a **virtual node**:
 
 ```ts
 { type: "p", props: { class: "x" }, children: ["hi"] }
@@ -15,7 +16,7 @@ which calls `createVirtualNode()` (`src/virtual-node.ts`). The result is a **vir
 
 ## 2. `render` builds a tree of instances
 
-`render(<App />, container)` (`src/render.ts`) creates a **root instance** and asks
+`render(<App />, container)` (`packages/core/src/render.ts`) creates a **root instance** and asks
 `core/reconcile.ts` to render into it.
 
 Every child that ends up on the page gets an **instance** (`core/instance.ts`). An instance
@@ -64,7 +65,7 @@ which instance is running. Hooks use that through `useHook(create)`:
 - every later render returns the same stored object, matched by call order
 
 That is why hooks must be called in the same order on every render. Each hook in
-`src/hooks/` is a small function on top of `useHook`.
+`packages/core/src/hooks/` is a small function on top of `useHook`.
 
 ## 5. State changes re-render one component
 
@@ -85,7 +86,7 @@ layout effect, then every normal effect.
 ## File map
 
 ```
-src/
+packages/core/src/
   index.ts            public exports
   render.ts           render(), mount()
   virtual-node.ts     createVirtualNode(), Fragment
