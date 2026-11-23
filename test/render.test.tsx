@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { Fragment, h, mount, render, type Child } from "jsx-lite-renderer";
+import { Fragment, createVirtualNode, mount, render, type Child } from "koniwa";
 
 const renderToRoot = (child: Parameters<typeof render>[0]) => {
   const root = document.createElement("div");
@@ -7,9 +7,9 @@ const renderToRoot = (child: Parameters<typeof render>[0]) => {
   return root;
 };
 
-describe("h", () => {
-  it("creates a VNode and flattens nested children", () => {
-    const node = h("ul", { id: "list" }, ["a", ["b", ["c"]]]);
+describe("createVirtualNode", () => {
+  it("creates a VirtualNode and flattens nested children", () => {
+    const node = createVirtualNode("ul", { id: "list" }, ["a", ["b", ["c"]]]);
     expect(node).toEqual({
       type: "ul",
       props: { id: "list" },
@@ -18,7 +18,7 @@ describe("h", () => {
   });
 
   it("uses empty props when null is passed", () => {
-    expect(h("br", null).props).toEqual({});
+    expect(createVirtualNode("br", null).props).toEqual({});
   });
 });
 
@@ -117,8 +117,10 @@ describe("render", () => {
     expect(circle.namespaceURI).toBe("http://www.w3.org/2000/svg");
   });
 
-  it("works with the classic h() factory too", () => {
-    const root = renderToRoot(h(Fragment, null, h("em", null, "x")));
+  it("works with the classic createVirtualNode() factory too", () => {
+    const root = renderToRoot(
+      createVirtualNode(Fragment, null, createVirtualNode("em", null, "x")),
+    );
     expect(root.innerHTML).toBe("<em>x</em>");
   });
 });

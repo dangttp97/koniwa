@@ -1,5 +1,5 @@
 {
-  "name": "jsx-lite-renderer",
+  "name": "koniwa",
   "version": "0.1.0",
   "description": "A tiny JSX renderer that turns JSX straight into real DOM. No virtual DOM diffing, no state, no dependencies.",
   "keywords": [
@@ -13,7 +13,7 @@
   "author": "Trần Thành Phương Đăng",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dangttp97/jsx-lite-renderer.git"
+    "url": "git+https://github.com/dangttp97/koniwa.git"
   },
   "type": "module",
   "sideEffects": false,

@@ -10,11 +10,11 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "jsx-lite-renderer",
+    "jsxImportSource": "koniwa",
     "paths": {
-      "jsx-lite-renderer": ["./src/index.ts"],
-      "jsx-lite-renderer/jsx-runtime": ["./src/jsx-runtime.ts"],
-      "jsx-lite-renderer/jsx-dev-runtime": ["./src/jsx-dev-runtime.ts"]
+      "koniwa": ["./src/index.ts"],
+      "koniwa/jsx-runtime": ["./src/jsx-runtime.ts"],
+      "koniwa/jsx-dev-runtime": ["./src/jsx-dev-runtime.ts"]
     },
     "allowImportingTsExtensions": true
   },
