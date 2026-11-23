@@ -15,6 +15,7 @@ import {
 import { domNodesOf, nextDomSibling, placeDomNodes } from "./placement.js";
 import { setRef } from "./refs.js";
 
+let queuedLayoutEffects: Array<() => void> = [];
 let queuedEffects: Array<() => void> = [];
 
 export const createRoot = (container: Node): Instance =>
@@ -34,8 +35,11 @@ export const rerenderComponent = (instance: Instance): void => {
 };
 
 export const runQueuedEffects = (): void => {
+  const layoutEffects = queuedLayoutEffects;
   const effects = queuedEffects;
+  queuedLayoutEffects = [];
   queuedEffects = [];
+  layoutEffects.forEach((run) => run());
   effects.forEach((run) => run());
 };
 
@@ -136,6 +140,8 @@ const renderComponent = (instance: Instance): void => {
   const output = callComponent(instance);
   instance.children = reconcileChildren(instance, toRenderItems(output));
 
+  queuedLayoutEffects.push(...instance.pendingLayoutEffects);
   queuedEffects.push(...instance.pendingEffects);
+  instance.pendingLayoutEffects = [];
   instance.pendingEffects = [];
 };

@@ -12,6 +12,7 @@ export interface Instance {
   domNode: Node | null;
   children: Instance[];
   hooks: unknown[];
+  pendingLayoutEffects: Array<() => void>;
   pendingEffects: Array<() => void>;
   needsRender: boolean;
   unmounted: boolean;
@@ -30,6 +31,7 @@ export const createInstance = (
   domNode: null,
   children: [],
   hooks: [],
+  pendingLayoutEffects: [],
   pendingEffects: [],
   needsRender: false,
   unmounted: false,

@@ -2,10 +2,14 @@ export { createContext, useContext } from "./context.js";
 export {
   useCallback,
   useEffect,
+  useId,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
+  useReducer,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "./hooks.js";
 export type { JSX } from "./jsx.js";
 export { mount, render } from "./render.js";

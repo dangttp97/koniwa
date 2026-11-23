@@ -10,6 +10,8 @@ import type {
   SetStateAction,
 } from "./types.js";
 
+let nextId = 0;
+
 export const useState = <S>(
   initialState: S | (() => S),
 ): [S, Dispatch<SetStateAction<S>>] => {
@@ -36,24 +38,46 @@ export const useState = <S>(
   return [hook.value, setValue];
 };
 
+export function useReducer<S, A>(
+  reducer: (state: S, action: A) => S,
+  initialState: S,
+): [S, Dispatch<A>];
+export function useReducer<S, A, I>(
+  reducer: (state: S, action: A) => S,
+  initialArg: I,
+  init: (arg: I) => S,
+): [S, Dispatch<A>];
+export function useReducer<S, A>(
+  reducer: (state: S, action: A) => S,
+  initialArg: unknown,
+  init?: (arg: unknown) => S,
+): [S, Dispatch<A>] {
+  const [state, setState] = useState(() =>
+    init ? init(initialArg) : (initialArg as S),
+  );
+  const latestReducer = useRef(reducer);
+  latestReducer.current = reducer;
+
+  const dispatch = useMemo(
+    () => (action: A) =>
+      setState((previous) => latestReducer.current(previous, action)),
+    [],
+  );
+  return [state, dispatch];
+}
+
 export const useEffect = (
   effect: EffectCallback,
   deps?: DependencyList,
 ): void => {
-  const { hook, instance } = useHookSlot<{
-    deps?: DependencyList;
-    cleanup?: () => void;
-  }>(() => ({}));
+  useEffectIn("pendingEffects", effect, deps);
+};
 
-  if (!depsChanged(hook.deps, deps)) return;
-  hook.deps = deps;
-
-  instance.pendingEffects.push(() => {
-    if (instance.unmounted) return;
-    hook.cleanup?.();
-    const cleanup = effect();
-    hook.cleanup = typeof cleanup === "function" ? cleanup : undefined;
-  });
+export const useLayoutEffect = (
+  effect: EffectCallback,
+  deps?: DependencyList,
+): void => {
+  useEffectIn("pendingLayoutEffects", effect, deps);
 };
 
 export const useMemo = <T>(factory: () => T, deps: DependencyList): T => {
@@ -84,13 +108,58 @@ export const useImperativeHandle = <T>(
   createHandle: () => T,
   deps?: DependencyList,
 ): void => {
-  useEffect(
+  useLayoutEffect(
     () => {
       setRef(ref, createHandle());
       return () => setRef(ref, null);
     },
     deps && [...deps, ref],
   );
+};
+
+export const useId = (): string =>
+  useHookSlot(() => ({ id: `_k${nextId++}_` })).hook.id;
+
+export const useSyncExternalStore = <T>(
+  subscribe: (onStoreChange: () => void) => () => void,
+  getSnapshot: () => T,
+  _getServerSnapshot?: () => T,
+): T => {
+  const value = getSnapshot();
+  const { hook, instance } = useHookSlot(() => ({ value, getSnapshot }));
+  hook.value = value;
+  hook.getSnapshot = getSnapshot;
+
+  useLayoutEffect(() => {
+    const renderIfChanged = () => {
+      if (!Object.is(hook.value, hook.getSnapshot())) scheduleRender(instance);
+    };
+    renderIfChanged();
+    return subscribe(renderIfChanged);
+  }, [subscribe]);
+
+  return value;
+};
+
+const useEffectIn = (
+  queue: "pendingEffects" | "pendingLayoutEffects",
+  effect: EffectCallback,
+  deps: DependencyList | undefined,
+): void => {
+  const { hook, instance } = useHookSlot<{
+    deps?: DependencyList;
+    cleanup?: () => void;
+  }>(() => ({}));
+
+  if (!depsChanged(hook.deps, deps)) return;
+  hook.deps = deps;
+
+  instance[queue].push(() => {
+    if (instance.unmounted) return;
+    hook.cleanup?.();
+    const cleanup = effect();
+    hook.cleanup = typeof cleanup === "function" ? cleanup : undefined;
+  });
 };
 
 const depsChanged = (
