@@ -10,11 +10,11 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "koniwa",
+    "jsxImportSource": "@koniwa/core",
     "paths": {
-      "koniwa": ["./src/index.ts"],
-      "koniwa/jsx-runtime": ["./src/jsx-runtime.ts"],
-      "koniwa/jsx-dev-runtime": ["./src/jsx-dev-runtime.ts"]
+      "@koniwa/core": ["./src/index.ts"],
+      "@koniwa/core/jsx-runtime": ["./src/jsx-runtime.ts"],
+      "@koniwa/core/jsx-dev-runtime": ["./src/jsx-dev-runtime.ts"]
     },
     "allowImportingTsExtensions": true
   },

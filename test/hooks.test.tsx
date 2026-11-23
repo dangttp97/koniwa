@@ -6,7 +6,7 @@ import {
   useEffect,
   useMemo,
   useState,
-} from "koniwa";
+} from "@koniwa/core";
 
 const nextUpdate = () => new Promise((resolve) => setTimeout(resolve, 0));
 

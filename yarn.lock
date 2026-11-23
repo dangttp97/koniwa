@@ -66,6 +66,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@koniwa/core@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@koniwa/core@workspace:."
+  dependencies:
+    happy-dom: "npm:^21.0.4"
+    prettier: "npm:^3.10.1"
+    typescript: "npm:~6.0.3"
+    vite: "npm:^8.3.8"
+    vitest: "npm:^5.1.0"
+  languageName: unknown
+  linkType: soft
+
 "@napi-rs/wasm-runtime@npm:1.2.6":
   version: 1.2.6
   resolution: "@napi-rs/wasm-runtime@npm:1.2.6"
@@ -440,18 +452,6 @@ __metadata:
   checksum: 10c0/5884815115bceac452877659a9c7726382531592f43dc29e5d48b7c4100661aed54018cb90bd36cb2eaeba521092570769167acbb95c18d39afdccbcca06c5ce
   languageName: node
   linkType: hard
-
-"koniwa@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "koniwa@workspace:."
-  dependencies:
-    happy-dom: "npm:^21.0.4"
-    prettier: "npm:^3.10.1"
-    typescript: "npm:~6.0.3"
-    vite: "npm:^8.3.8"
-    vitest: "npm:^5.1.0"
-  languageName: unknown
-  linkType: soft
 
 "lightningcss-android-arm64@npm:1.33.0":
   version: 1.33.0
