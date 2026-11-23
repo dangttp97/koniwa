@@ -1,4 +1,4 @@
-import type { Child, Props } from "../types.js";
+import type { Child, Props, Ref } from "../types.js";
 import { callComponent } from "./current-component.js";
 import { createDomElement, updateProps } from "./dom.js";
 import {
@@ -13,6 +13,7 @@ import {
   type RenderItem,
 } from "./instance.js";
 import { domNodesOf, nextDomSibling, placeDomNodes } from "./placement.js";
+import { setRef } from "./refs.js";
 
 let queuedEffects: Array<() => void> = [];
 
@@ -43,6 +44,9 @@ export const unmount = (instance: Instance): void => {
   instance.children.forEach(unmount);
   for (const hook of instance.hooks as Array<{ cleanup?: () => void }>) {
     hook.cleanup?.();
+  }
+  if (isElementItem(instance.item)) {
+    setRef(instance.item.props.ref as Ref<Element>, null);
   }
 };
 
@@ -120,6 +124,11 @@ const renderElement = (instance: Instance, oldProps: Props): void => {
   instance.children = reconcileChildren(instance, toRenderItems(children));
   placeDomNodes(element, instance.children, null);
   updateProps(element, oldProps, props);
+
+  if (oldProps.ref !== props.ref) {
+    setRef(oldProps.ref as Ref<Element>, null);
+    setRef(props.ref as Ref<Element>, element);
+  }
 };
 
 const renderComponent = (instance: Instance): void => {

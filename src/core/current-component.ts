@@ -14,14 +14,21 @@ export const callComponent = (instance: Instance): Child => {
   }
 };
 
+export const currentInstance = (): Instance => requireCurrent().instance;
+
 export const useHookSlot = <T>(
   create: () => T,
 ): { hook: T; instance: Instance } => {
+  const slot = requireCurrent();
+  const { instance } = slot;
+  const index = slot.hookIndex++;
+  instance.hooks[index] ??= create();
+  return { hook: instance.hooks[index] as T, instance };
+};
+
+const requireCurrent = () => {
   if (!current) {
     throw new Error("Hooks can only be called inside a component.");
   }
-  const { instance } = current;
-  const index = current.hookIndex++;
-  instance.hooks[index] ??= create();
-  return { hook: instance.hooks[index] as T, instance };
+  return current;
 };

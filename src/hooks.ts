@@ -1,9 +1,12 @@
 import { useHookSlot } from "./core/current-component.js";
+import { setRef } from "./core/refs.js";
 import { scheduleRender } from "./core/scheduler.js";
 import type {
   DependencyList,
   Dispatch,
   EffectCallback,
+  Ref,
+  RefObject,
   SetStateAction,
 } from "./types.js";
 
@@ -69,6 +72,26 @@ export const useCallback = <T extends (...args: any[]) => unknown>(
   callback: T,
   deps: DependencyList,
 ): T => useMemo(() => callback, deps);
+
+export function useRef<T>(initialValue: T): RefObject<T>;
+export function useRef<T>(initialValue: T | null): RefObject<T | null>;
+export function useRef<T>(initialValue: T): RefObject<T> {
+  return useHookSlot(() => ({ current: initialValue })).hook;
+}
+
+export const useImperativeHandle = <T>(
+  ref: Ref<T>,
+  createHandle: () => T,
+  deps?: DependencyList,
+): void => {
+  useEffect(
+    () => {
+      setRef(ref, createHandle());
+      return () => setRef(ref, null);
+    },
+    deps && [...deps, ref],
+  );
+};
 
 const depsChanged = (
   previous: DependencyList | undefined,

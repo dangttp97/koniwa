@@ -5,6 +5,8 @@ const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 // Set as DOM properties, after the other props, so `type` and <option>s exist first.
 const DOM_PROPERTIES = ["value", "checked", "selected"];
 
+const IGNORED_PROPS = ["key", "children", "ref"];
+
 export const createDomElement = (tag: string, isSvg: boolean): Element =>
   isSvg
     ? document.createElementNS(SVG_NAMESPACE, tag)
@@ -33,7 +35,7 @@ const setProp = (
   oldValue: unknown,
   value: unknown,
 ): void => {
-  if (name === "key" || name === "children" || oldValue === value) return;
+  if (IGNORED_PROPS.includes(name) || oldValue === value) return;
 
   const isEvent =
     name.startsWith("on") &&
