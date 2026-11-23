@@ -4,6 +4,8 @@ export type RenderItem = VirtualNode | string | null;
 
 export type ElementItem = VirtualNode & { type: string };
 
+export type Effect = () => void;
+
 export interface Instance {
   item: RenderItem;
   parent: Instance | null;
@@ -12,7 +14,7 @@ export interface Instance {
   domNode: Node | null;
   children: Instance[];
   hooks: unknown[];
-  pendingEffects: Array<() => void>;
+  pendingEffects: { layout: Effect[]; normal: Effect[] };
   needsRender: boolean;
   unmounted: boolean;
 }
@@ -30,7 +32,7 @@ export const createInstance = (
   domNode: null,
   children: [],
   hooks: [],
-  pendingEffects: [],
+  pendingEffects: { layout: [], normal: [] },
   needsRender: false,
   unmounted: false,
 });

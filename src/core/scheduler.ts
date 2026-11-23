@@ -1,5 +1,6 @@
 import type { Instance } from "./instance.js";
-import { rerenderComponent, runQueuedEffects } from "./reconcile.js";
+import { runQueuedEffects } from "./effects.js";
+import { rerenderComponent } from "./reconcile.js";
 
 const MAX_RENDERS_PER_FLUSH = 1000;
 
