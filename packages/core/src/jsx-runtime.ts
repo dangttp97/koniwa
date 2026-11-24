@@ -1,19 +1,24 @@
-import type { Child, Component, Props, VirtualNode } from "./types.js";
+import type {
+  ReactNode,
+  FunctionComponent,
+  Props,
+  ReactElement,
+} from "./types.js";
 import { Fragment, createVirtualNode } from "./virtual-node.js";
 
 export { Fragment };
 export type { JSX } from "./jsx.js";
 
 export const jsx = (
-  type: string | Component,
+  type: string | FunctionComponent<any>,
   props: Props,
   key?: unknown,
-): VirtualNode => {
+): ReactElement => {
   const { children, ...rest } = props;
   if (key !== undefined) rest.key = key;
   return children === undefined
     ? createVirtualNode(type, rest)
-    : createVirtualNode(type, rest, children as Child);
+    : createVirtualNode(type, rest, children as ReactNode);
 };
 
 export const jsxs = jsx;

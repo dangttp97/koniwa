@@ -91,24 +91,27 @@ mount(<App />, document.getElementById("root")!);
 
 The parts you write every day work the same way:
 
-| React                                             | koniwa                                         |
-| ------------------------------------------------- | ---------------------------------------------- |
-| Function components with `props`, `children`      | Same                                           |
-| `<>...</>` / `Fragment`                           | Same                                           |
-| `className`, `htmlFor`, `style={{ ... }}`         | Same                                           |
-| `onClick`, `onInput`, `onSubmit`, …               | Same names, attached with `addEventListener`   |
-| `"jsxImportSource": "react"`                      | `"jsxImportSource": "@koniwa/core"`            |
-| `React.createElement(type, props, ...kids)`       | `createVirtualNode(type, props, ...kids)`      |
-| `createRoot(root).render(<App />)`                | `mount(<App />, root)`                         |
-| `useState`, `useEffect`, `useMemo`, `useCallback` | Same names and signatures                      |
-| `useRef`, `useImperativeHandle`                   | Same names and signatures                      |
-| `useReducer`, `useLayoutEffect`, `useId`          | Same names and signatures                      |
-| `useSyncExternalStore`                            | Same (`getServerSnapshot` is ignored: no SSR)  |
-| `createContext`, `<Ctx.Provider>`, `useContext`   | Same                                           |
-| `ref` on elements (objects or callbacks)          | Same                                           |
-| `ref` on components                               | A normal prop, like React 19 (no `forwardRef`) |
-| `key` on list items                               | Same: keyed items are moved, not recreated     |
-| Controlled inputs (`value`, `checked`)            | Same                                           |
+| React                                                            | koniwa                                         |
+| ---------------------------------------------------------------- | ---------------------------------------------- |
+| Function components with `props`, `children`                     | Same                                           |
+| `<>...</>` / `Fragment`                                          | Same                                           |
+| `className`, `htmlFor`, `style={{ ... }}`                        | Same                                           |
+| `onClick`, `onInput`, `onSubmit`, …                              | Same names, attached with `addEventListener`   |
+| `"jsxImportSource": "react"`                                     | `"jsxImportSource": "@koniwa/core"`            |
+| `React.createElement(type, props, ...kids)`                      | `createVirtualNode(type, props, ...kids)`      |
+| `createRoot(root).render(<App />)`                               | `mount(<App />, root)`                         |
+| `useState`, `useEffect`, `useMemo`, `useCallback`                | Same names and signatures                      |
+| `useRef`, `useImperativeHandle`                                  | Same names and signatures                      |
+| `useReducer`, `useLayoutEffect`, `useId`                         | Same names and signatures                      |
+| `useSyncExternalStore`                                           | Same (`getServerSnapshot` is ignored: no SSR)  |
+| `createContext`, `<Ctx.Provider>`, `useContext`                  | Same                                           |
+| `ref` on elements (objects or callbacks)                         | Same                                           |
+| `ref` on components                                              | A normal prop, like React 19 (no `forwardRef`) |
+| `key` on list items                                              | Same: keyed items are moved, not recreated     |
+| Controlled inputs (`value`, `checked`)                           | Same                                           |
+| `ReactNode`, `ReactElement`, `FC`, `PropsWithChildren`           | Same type names                                |
+| `ComponentProps<"button">`, `HTMLAttributes<T>`, `CSSProperties` | Same type names                                |
+| `MouseEventHandler<T>`, `ChangeEventHandler<T>`, …               | Same names; the event is the native DOM event  |
 
 What is different:
 
@@ -123,30 +126,90 @@ What is different:
 - **No class components**, no `forwardRef`, `memo` or portals, and no `dangerouslySetInnerHTML`.
 - **React libraries do not work.** There is no compatibility layer like `preact/compat`.
 
+## Typing components
+
+Props and children are typed with the same names as React:
+
+```tsx
+import type { ComponentProps, PropsWithChildren } from "@koniwa/core";
+
+const Card = ({ title, children }: PropsWithChildren<{ title: string }>) => (
+  <section>
+    <h2>{title}</h2>
+    {children}
+  </section>
+);
+```
+
+To wrap an element, start from its props with `ComponentProps<"button">`. Every prop the
+`<button>` accepts is typed, including `ref`, `aria-*` and `data-*`, so typos are errors:
+
+```tsx
+type ButtonProps = ComponentProps<"button"> & { variant?: "primary" | "ghost" };
+
+export const Button = ({
+  variant = "primary",
+  className = "",
+  children,
+  ...rest
+}: ButtonProps) => (
+  <button
+    type="button"
+    {...rest}
+    className={`btn btn-${variant} ${className}`.trim()}
+  >
+    {children}
+  </button>
+);
+
+<Button
+  variant="ghost"
+  onClick={(event) => event.currentTarget.blur()}
+  aria-label="Close"
+>
+  ✕
+</Button>;
+```
+
+Event handlers receive the native event, with `currentTarget` typed as the element.
+`ComponentProps<typeof Card>` reads the props of a component, and
+`ComponentPropsWithoutRef<"div">` drops `ref`.
+
+SVG elements and custom elements (`<my-widget>`) accept any attribute.
+
 ## API
 
-| Export                                         | Description                                                                                                                                                    |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `render(child, container)`                     | Builds DOM from `child` and **appends** it to `container`. Accepts a VirtualNode, a string or number, an array, or a component function (`render(App, root)`). |
-| `mount(child, container)`                      | Removes what was rendered in `container` before (running effect cleanups), clears it, then renders into it.                                                    |
-| `useState(initial)`                            | `[value, setValue]`. `setValue(next)` or `setValue((prev) => next)`; updates in the same tick are batched into one render.                                     |
-| `useEffect(effect, deps?)`                     | Runs `effect` after the DOM is updated, again when `deps` change (every render without `deps`). Return a function to clean up.                                 |
-| `useMemo(factory, deps)`                       | Returns the cached result of `factory` until `deps` change.                                                                                                    |
-| `useCallback(callback, deps)`                  | Returns the same function until `deps` change.                                                                                                                 |
-| `useRef(initial)`                              | `{ current }` that stays the same across renders; changing it does not re-render. Pass it as `ref` to get a DOM element.                                       |
-| `useImperativeHandle(ref, create, deps?)`      | Sets the parent's `ref` to `create()` (for example `{ focus }`), and back to `null` on unmount.                                                                |
-| `createContext(defaultValue)`                  | Returns `{ Provider, defaultValue }`. Wrap a subtree in `<Ctx.Provider value={...}>`.                                                                          |
-| `useContext(context)`                          | The `value` of the nearest `Provider` above, or `defaultValue` when there is none.                                                                             |
-| `useReducer(reducer, initialArg, init?)`       | `[state, dispatch]`. `dispatch(action)` sets the state to `reducer(state, action)`; `dispatch` never changes.                                                  |
-| `useLayoutEffect(effect, deps?)`               | Like `useEffect`, but all layout effects run before any `useEffect`. Use it to measure the DOM.                                                                |
-| `useId()`                                      | A unique id that stays the same for the life of the component, for `id` / `htmlFor` pairs.                                                                     |
-| `useSyncExternalStore(subscribe, getSnapshot)` | Reads a value from an outside store and re-renders when `getSnapshot()` returns something new.                                                                 |
-| `createVirtualNode(type, props, ...children)`  | Classic JSX factory. Returns a VirtualNode `{ type, props, children }`.                                                                                        |
-| `Fragment`                                     | `<>...</>`: renders children without a wrapper element.                                                                                                        |
-| `@koniwa/core/jsx-runtime`                     | Automatic runtime (`jsx`, `jsxs`, `Fragment`) used by the compiler.                                                                                            |
+| Export                                         | Description                                                                                                                                                     |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `render(child, container)`                     | Builds DOM from `child` and **appends** it to `container`. Accepts a ReactElement, a string or number, an array, or a component function (`render(App, root)`). |
+| `mount(child, container)`                      | Removes what was rendered in `container` before (running effect cleanups), clears it, then renders into it.                                                     |
+| `useState(initial)`                            | `[value, setValue]`. `setValue(next)` or `setValue((prev) => next)`; updates in the same tick are batched into one render.                                      |
+| `useEffect(effect, deps?)`                     | Runs `effect` after the DOM is updated, again when `deps` change (every render without `deps`). Return a function to clean up.                                  |
+| `useMemo(factory, deps)`                       | Returns the cached result of `factory` until `deps` change.                                                                                                     |
+| `useCallback(callback, deps)`                  | Returns the same function until `deps` change.                                                                                                                  |
+| `useRef(initial)`                              | `{ current }` that stays the same across renders; changing it does not re-render. Pass it as `ref` to get a DOM element.                                        |
+| `useImperativeHandle(ref, create, deps?)`      | Sets the parent's `ref` to `create()` (for example `{ focus }`), and back to `null` on unmount.                                                                 |
+| `createContext(defaultValue)`                  | Returns `{ Provider, defaultValue }`. Wrap a subtree in `<Ctx.Provider value={...}>`.                                                                           |
+| `useContext(context)`                          | The `value` of the nearest `Provider` above, or `defaultValue` when there is none.                                                                              |
+| `useReducer(reducer, initialArg, init?)`       | `[state, dispatch]`. `dispatch(action)` sets the state to `reducer(state, action)`; `dispatch` never changes.                                                   |
+| `useLayoutEffect(effect, deps?)`               | Like `useEffect`, but all layout effects run before any `useEffect`. Use it to measure the DOM.                                                                 |
+| `useId()`                                      | A unique id that stays the same for the life of the component, for `id` / `htmlFor` pairs.                                                                      |
+| `useSyncExternalStore(subscribe, getSnapshot)` | Reads a value from an outside store and re-renders when `getSnapshot()` returns something new.                                                                  |
+| `createVirtualNode(type, props, ...children)`  | Classic JSX factory. Returns a ReactElement `{ type, props, children }`.                                                                                        |
+| `Fragment`                                     | `<>...</>`: renders children without a wrapper element.                                                                                                         |
+| `@koniwa/core/jsx-runtime`                     | Automatic runtime (`jsx`, `jsxs`, `Fragment`) used by the compiler.                                                                                             |
 
-Types: `Child`, `Component`, `Props`, `VirtualNode`, `JSX`, `Dispatch`, `SetStateAction`,
-`DependencyList`, `EffectCallback`, `Ref`, `RefObject`, `RefCallback`, `Context`.
+Types, named as in React: `ReactNode`, `ReactElement`, `FC`, `FunctionComponent`,
+`PropsWithChildren`, `ComponentProps`, `ComponentPropsWithRef`, `ComponentPropsWithoutRef`,
+`HTMLAttributes`, `DOMAttributes`, `SVGProps`, `CSSProperties`, `EventHandler`,
+`MouseEventHandler`, `PointerEventHandler`, `KeyboardEventHandler`, `FocusEventHandler`,
+`FormEventHandler`, `ChangeEventHandler`, `DragEventHandler`, `TouchEventHandler`,
+`WheelEventHandler`, `ClipboardEventHandler`, `Ref`, `RefObject`, `RefCallback`, `Context`,
+`Dispatch`, `SetStateAction`, `DependencyList`, `EffectCallback`, `JSX`.
+
+The names used before 0.4.0 still work but are deprecated: `Child` (now `ReactNode`),
+`VirtualNode` (`ReactElement`), `Component` (`FunctionComponent`), `HTMLProps`
+(`HTMLAttributes`), `EventProps` (`DOMAttributes`) and `Props`.
 
 ### How props are applied
 
@@ -155,6 +218,7 @@ Types: `Child`, `Component`, `Props`, `VirtualNode`, `JSX`, `Dispatch`, `SetStat
 | `className` / `class`               | `class` attribute                   |
 | `htmlFor`                           | `for` attribute                     |
 | `onClick`, `onInput`, … (functions) | `addEventListener("click", …)`      |
+| `onDoubleClick`                     | `addEventListener("dblclick", …)`   |
 | `style={{ color: "red" }}`          | assigned to `element.style`         |
 | `value`, `checked`, `selected`      | set as DOM properties               |
 | `true`                              | empty attribute (`hidden=""`)       |
@@ -172,8 +236,10 @@ to HTML.
   inserting at the top of a list re-renders every item below it.
 - **`render` appends.** Calling `render` again on the same container adds a second tree. Use
   `mount` to replace the content.
-- **Loose attribute types.** Intrinsic elements accept any attribute; there is no per-element
-  type checking like `@types/react` provides.
+- **Attribute types come from the DOM.** HTML element props are derived from TypeScript's
+  DOM types (`HTMLButtonElement`, …), so they follow DOM property names (`readOnly`,
+  `tabIndex`) and are a little less detailed than `@types/react`. SVG elements are not
+  checked.
 - **Custom CSS properties in `style` objects** (`{ "--size": "10px" }`) are not applied; set
   them with CSS classes instead.
 

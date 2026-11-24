@@ -1,11 +1,14 @@
 import type { Instance } from "./core/instance.js";
 import { createRoot, renderRoot, unmount } from "./core/reconcile.js";
-import type { Child, Component } from "./types.js";
+import type { ReactNode, FunctionComponent } from "./types.js";
 import { createVirtualNode } from "./virtual-node.js";
 
 const rootsByContainer = new WeakMap<Node, Instance[]>();
 
-export const render = (child: Child | Component, container: Node): void => {
+export const render = (
+  child: ReactNode | FunctionComponent<any>,
+  container: Node,
+): void => {
   const root = createRoot(container);
   const roots = rootsByContainer.get(container) ?? [];
   rootsByContainer.set(container, [...roots, root]);
@@ -15,7 +18,10 @@ export const render = (child: Child | Component, container: Node): void => {
   renderRoot(root, node);
 };
 
-export const mount = (child: Child | Component, container: Element): void => {
+export const mount = (
+  child: ReactNode | FunctionComponent<any>,
+  container: Element,
+): void => {
   rootsByContainer.get(container)?.forEach(unmount);
   rootsByContainer.delete(container);
   container.replaceChildren();

@@ -1,6 +1,6 @@
 {
   "name": "@koniwa/router",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A small router for koniwa sites: path or hash URLs, route params, links and navigation hooks.",
   "keywords": [
     "router",
@@ -32,9 +32,9 @@
     "prepack": "yarn workspace @koniwa/core run build && yarn build"
   },
   "peerDependencies": {
-    "@koniwa/core": "^0.3.0"
+    "@koniwa/core": "^0.3.0 || ^0.4.0"
   },
   "devDependencies": {
-    "@koniwa/core": "^0.3.0"
+    "@koniwa/core": "^0.4.0"
   }
 }

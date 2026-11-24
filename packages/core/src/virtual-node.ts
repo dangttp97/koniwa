@@ -1,14 +1,19 @@
-import type { Child, Component, Props, VirtualNode } from "./types.js";
+import type {
+  ReactNode,
+  FunctionComponent,
+  Props,
+  ReactElement,
+} from "./types.js";
 
 export const createVirtualNode = (
-  type: string | Component,
+  type: string | FunctionComponent<any>,
   props: Props | null,
-  ...children: Child[]
-): VirtualNode => ({
+  ...children: ReactNode[]
+): ReactElement => ({
   type,
   props: props ?? {},
-  children: (children as unknown[]).flat(Infinity) as Child[],
+  children: (children as unknown[]).flat(Infinity) as ReactNode[],
 });
 
-export const Fragment = (props: { children?: Child[] }): Child =>
+export const Fragment = (props: { children?: ReactNode[] }): ReactNode =>
   props.children ?? [];

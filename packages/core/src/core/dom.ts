@@ -42,7 +42,7 @@ const setProp = (
     (typeof value === "function" || typeof oldValue === "function");
 
   if (isEvent) {
-    const eventName = name.slice(2).toLowerCase();
+    const eventName = toEventName(name);
     if (typeof oldValue === "function") {
       element.removeEventListener(eventName, oldValue as EventListener);
     }
@@ -95,3 +95,8 @@ const toAttributeName = (propName: string): string => {
 
 const toCssName = (key: string): string =>
   key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+
+const toEventName = (propName: string): string => {
+  const eventName = propName.slice(2).toLowerCase();
+  return eventName === "doubleclick" ? "dblclick" : eventName;
+};

@@ -4,7 +4,7 @@ import {
   createVirtualNode,
   mount,
   render,
-  type Child,
+  type ReactNode,
 } from "@koniwa/core";
 
 const renderToRoot = (child: Parameters<typeof render>[0]) => {
@@ -14,7 +14,7 @@ const renderToRoot = (child: Parameters<typeof render>[0]) => {
 };
 
 describe("createVirtualNode", () => {
-  it("creates a VirtualNode and flattens nested children", () => {
+  it("creates a ReactElement and flattens nested children", () => {
     const node = createVirtualNode("ul", { id: "list" }, ["a", ["b", ["c"]]]);
     expect(node).toEqual({
       type: "ul",
@@ -94,7 +94,13 @@ describe("render", () => {
   });
 
   it("calls components with props and children", () => {
-    const Card = ({ title, children }: { title: string; children?: Child }) => (
+    const Card = ({
+      title,
+      children,
+    }: {
+      title: string;
+      children?: ReactNode;
+    }) => (
       <section>
         <h2>{title}</h2>
         {children}

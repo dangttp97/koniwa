@@ -66,7 +66,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@koniwa/core@npm:^0.3.0, @koniwa/core@workspace:packages/core":
+"@koniwa/core@npm:^0.4.0, @koniwa/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@koniwa/core@workspace:packages/core"
   languageName: unknown
@@ -76,9 +76,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@koniwa/router@workspace:packages/router"
   dependencies:
-    "@koniwa/core": "npm:^0.3.0"
+    "@koniwa/core": "npm:^0.4.0"
   peerDependencies:
-    "@koniwa/core": ^0.3.0
+    "@koniwa/core": ^0.3.0 || ^0.4.0
   languageName: unknown
   linkType: soft
 

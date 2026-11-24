@@ -1,8 +1,8 @@
-import type { Child, VirtualNode } from "../types.js";
+import type { ReactNode, ReactElement } from "../types.js";
 
-export type RenderItem = VirtualNode | string | null;
+export type RenderItem = ReactElement | string | null;
 
-export type ElementItem = VirtualNode & { type: string };
+export type ElementItem = ReactElement & { type: string };
 
 export type Effect = () => void;
 
@@ -37,7 +37,7 @@ export const createInstance = (
   unmounted: false,
 });
 
-export const toRenderItems = (child: Child): RenderItem[] => {
+export const toRenderItems = (child: ReactNode): RenderItem[] => {
   if (Array.isArray(child)) return child.flatMap(toRenderItems);
   if (child == null || typeof child === "boolean") return [null];
   if (typeof child === "object") return [child];

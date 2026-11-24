@@ -1,14 +1,14 @@
-import type { Child, Component, VirtualNode } from "../types.js";
+import type { ReactNode, FunctionComponent, ReactElement } from "../types.js";
 import type { Instance } from "./instance.js";
 
 let current: { component: Instance; nextHookIndex: number } | null = null;
 
-export const callComponent = (component: Instance): Child => {
-  const { type, props, children } = component.item as VirtualNode;
+export const callComponent = (component: Instance): ReactNode => {
+  const { type, props, children } = component.item as ReactElement;
   const previous = current;
   current = { component, nextHookIndex: 0 };
   try {
-    return (type as Component)({ ...props, children });
+    return (type as FunctionComponent<any>)({ ...props, children });
   } finally {
     current = previous;
   }
