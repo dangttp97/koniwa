@@ -1,9 +1,9 @@
 import { currentComponent } from "../core/current-component.js";
-import type { Child, Context } from "../types.js";
+import type { ReactNode, Context } from "../types.js";
 
 export const createContext = <T>(defaultValue: T): Context<T> => ({
   defaultValue,
-  Provider: ({ children }: { value: T; children?: Child }) => children,
+  Provider: ({ children }: { value: T; children?: ReactNode }) => children,
 });
 
 export const useContext = <T>(context: Context<T>): T => {

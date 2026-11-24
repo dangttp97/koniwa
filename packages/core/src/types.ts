@@ -1,14 +1,16 @@
-export type Child =
-  VirtualNode | string | number | boolean | null | undefined | Child[];
+export type ReactNode =
+  ReactElement | string | number | boolean | null | undefined | ReactNode[];
 
 export type Props = Record<string, unknown>;
 
-export type Component<P = any> = (props: P) => Child;
+export type FunctionComponent<P = {}> = (props: P) => ReactNode;
 
-export interface VirtualNode {
-  type: string | Component;
+export type FC<P = {}> = FunctionComponent<P>;
+
+export interface ReactElement {
+  type: string | FunctionComponent<any>;
   props: Props;
-  children: Child[];
+  children: ReactNode[];
 }
 
 export type SetStateAction<S> = S | ((previous: S) => S);
@@ -28,6 +30,6 @@ export type RefCallback<T> = (instance: T | null) => void;
 export type Ref<T> = RefObject<T | null> | RefCallback<T> | null | undefined;
 
 export interface Context<T> {
-  Provider: Component<{ value: T; children?: Child }>;
+  Provider: FunctionComponent<{ value: T; children?: ReactNode }>;
   defaultValue: T;
 }

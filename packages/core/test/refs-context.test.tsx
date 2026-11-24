@@ -125,14 +125,14 @@ describe("useImperativeHandle", () => {
   it("clears the handle when the component is removed", async () => {
     const handle = { current: null as { ping: () => string } | null };
     let hide: () => void = () => {};
-    const Child = ({ ref }: { ref?: Ref<{ ping: () => string }> }) => {
+    const ReactNode = ({ ref }: { ref?: Ref<{ ping: () => string }> }) => {
       useImperativeHandle(ref, () => ({ ping: () => "pong" }), []);
       return <span />;
     };
     const App = () => {
       const [visible, setVisible] = useState(true);
       hide = () => setVisible(false);
-      return <div>{visible && <Child ref={handle} />}</div>;
+      return <div>{visible && <ReactNode ref={handle} />}</div>;
     };
     renderIntoDocument(<App />);
     expect(handle.current!.ping()).toBe("pong");

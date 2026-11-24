@@ -1,4 +1,4 @@
-import type { Child, Props, Ref } from "../types.js";
+import type { ReactNode, Props, Ref } from "../types.js";
 import { callComponent } from "./current-component.js";
 import { createDomElement, updateProps } from "./dom.js";
 import { queueEffectsOf, runQueuedEffects } from "./effects.js";
@@ -19,7 +19,7 @@ import { setRef } from "./refs.js";
 export const createRoot = (container: Node): Instance =>
   createInstance(null, null, container, false);
 
-export const renderRoot = (root: Instance, child: Child): void => {
+export const renderRoot = (root: Instance, child: ReactNode): void => {
   root.children = reconcileChildren(root, toRenderItems(child));
   placeDomNodes(root.parentDom, root.children, null);
   runQueuedEffects();

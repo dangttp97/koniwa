@@ -94,7 +94,7 @@ describe("useId", () => {
 describe("useLayoutEffect", () => {
   it("runs every layout effect in the tree before any useEffect", () => {
     const log: string[] = [];
-    const Child = () => {
+    const ReactNode = () => {
       useEffect(() => {
         log.push("child effect");
       }, []);
@@ -110,7 +110,7 @@ describe("useLayoutEffect", () => {
       useLayoutEffect(() => {
         log.push("parent layout");
       }, []);
-      return <Child />;
+      return <ReactNode />;
     };
 
     renderIntoDocument(<Parent />);

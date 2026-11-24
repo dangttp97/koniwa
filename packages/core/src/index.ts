@@ -12,20 +12,50 @@ export {
   useState,
   useSyncExternalStore,
 } from "./hooks/index.js";
-export type { JSX } from "./jsx.js";
 export { mount, render } from "./render.js";
+export { Fragment, createVirtualNode } from "./virtual-node.js";
+
 export type {
-  Child,
-  Component,
   Context,
   DependencyList,
   Dispatch,
   EffectCallback,
-  Props,
+  FC,
+  FunctionComponent,
+  ReactElement,
+  ReactNode,
   Ref,
   RefCallback,
   RefObject,
   SetStateAction,
-  VirtualNode,
 } from "./types.js";
-export { Fragment, createVirtualNode } from "./virtual-node.js";
+export type {
+  ChangeEventHandler,
+  ClipboardEventHandler,
+  ComponentProps,
+  ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
+  CSSProperties,
+  DOMAttributes,
+  DragEventHandler,
+  EventHandler,
+  FocusEventHandler,
+  FormEventHandler,
+  HTMLAttributes,
+  KeyboardEventHandler,
+  MouseEventHandler,
+  PointerEventHandler,
+  PropsWithChildren,
+  SVGProps,
+  TouchEventHandler,
+  WheelEventHandler,
+} from "./dom-props.js";
+export type { JSX } from "./jsx.js";
+export type {
+  Child,
+  Component,
+  EventProps,
+  HTMLProps,
+  Props,
+  VirtualNode,
+} from "./deprecated.js";

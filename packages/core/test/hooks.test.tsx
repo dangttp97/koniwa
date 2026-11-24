@@ -100,7 +100,7 @@ describe("useState", () => {
   });
 
   it("keeps child state when the parent re-renders", async () => {
-    const Child = () => {
+    const ReactNode = () => {
       const [on, setOn] = useState(false);
       return <button onClick={() => setOn(!on)}>{on ? "on" : "off"}</button>;
     };
@@ -109,7 +109,7 @@ describe("useState", () => {
       return (
         <div>
           <span onClick={() => setCount(count + 1)}>{count}</span>
-          <Child />
+          <ReactNode />
         </div>
       );
     };
