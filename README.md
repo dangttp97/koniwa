@@ -64,7 +64,7 @@ components and laid out with care.
 
 Koniwa is one part of a bigger house:
 
-- [**watari**](https://github.com/dangttp97/watari) (渡り), from _watari-rōka_, the covered
+- [**watari**](https://github.com/machiyajs/watari) (渡り), from _watari-rōka_, the covered
   corridor that connects the rooms. It fetches data and carries it where it is needed.
 - **jubako** (重箱), the stacked lunch boxes kept in the kitchen. It stores things in layers.
 - **koniwa** (小庭), the garden. It puts everything on display.

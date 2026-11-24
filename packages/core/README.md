@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/dangttp97/koniwa/main/assets/logo.svg" width="96" alt="koniwa logo: a bonsai tree in a small pot">
+  <img src="https://raw.githubusercontent.com/machiyajs/koniwa/main/assets/logo.svg" width="96" alt="koniwa logo: a bonsai tree in a small pot">
 </p>
 
 <h1 align="center">@koniwa/core</h1>
 
-<p align="center">The core of <a href="https://github.com/dangttp97/koniwa">koniwa 小庭</a>: a tiny JSX renderer that turns JSX straight into real DOM nodes.</p>
+<p align="center">The core of <a href="https://github.com/machiyajs/koniwa">koniwa 小庭</a>: a tiny JSX renderer that turns JSX straight into real DOM nodes.</p>
 
 - **React-style hooks.** `useState`, `useReducer`, `useEffect`, `useLayoutEffect`,
   `useMemo`, `useCallback`, `useRef`, `useContext`, `useImperativeHandle`, `useId` and
@@ -263,7 +263,7 @@ carry over:
 | `useSyncExternalStore` | Read from an outside store and stay in sync with it         | Available |
 
 Routing between pages lives in a separate package,
-[`@koniwa/router`](https://github.com/dangttp97/koniwa/tree/main/packages/router): a small
+[`@koniwa/router`](https://github.com/machiyajs/koniwa/tree/main/packages/router): a small
 router, not a full SPA framework.
 
 Out of scope, on purpose: server-side rendering, server components, Suspense and concurrent
@@ -271,8 +271,8 @@ rendering. koniwa stays a small tool for static sites of about ten pages-ish.
 
 ## Contributing
 
-See the [repository README](https://github.com/dangttp97/koniwa#development) and
-[how koniwa works](https://github.com/dangttp97/koniwa/blob/main/docs/architecture.md).
+See the [repository README](https://github.com/machiyajs/koniwa#development) and
+[how koniwa works](https://github.com/machiyajs/koniwa/blob/main/docs/architecture.md).
 
 ## License
 

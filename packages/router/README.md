@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/dangttp97/koniwa/main/assets/logo.svg" width="96" alt="koniwa logo: a bonsai tree in a small pot">
+  <img src="https://raw.githubusercontent.com/machiyajs/koniwa/main/assets/logo.svg" width="96" alt="koniwa logo: a bonsai tree in a small pot">
 </p>
 
 <h1 align="center">@koniwa/router</h1>
 
-<p align="center">A small router for <a href="https://github.com/dangttp97/koniwa">koniwa 小庭</a> sites: path or hash URLs, route params, links and navigation hooks.</p>
+<p align="center">A small router for <a href="https://github.com/machiyajs/koniwa">koniwa 小庭</a> sites: path or hash URLs, route params, links and navigation hooks.</p>
 
 Made for sites of a handful of pages. It switches pages without reloading, reads `:params`
 from the URL, and gives you `<Link>` and a few hooks. It is not a full SPA framework: no

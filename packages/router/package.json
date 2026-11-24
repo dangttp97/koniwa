@@ -12,7 +12,7 @@
   "author": "Trần Thành Phương Đăng",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dangttp97/koniwa.git",
+    "url": "git+https://github.com/machiyajs/koniwa.git",
     "directory": "packages/router"
   },
   "type": "module",
